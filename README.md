@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-# E-commerce
-=======
-#E-commerce project (Backend)
+# E-commerce project (Backend)
 
 Современный e-commerce проект для просмотра товаров, добавления их в корзину и оформления заказа.
 
@@ -143,4 +140,4 @@ docker compose up --build -d
 ```bash
 pytest
 ```
->>>>>>> c78c787 (Project e-commerce)
+
