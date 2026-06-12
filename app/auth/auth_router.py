@@ -72,7 +72,7 @@ async def change_user_role(
 
 
 @router.post(
-    "/users/logout",
+    "/user/logout",
     status_code=status.HTTP_200_OK,
     dependencies=[Depends(rate_limiter(max_requests=5, window_seconds=60))]
 )

@@ -105,6 +105,8 @@ docker compose up --build -d
 ### Auth
 - `POST /auth/registration`
 - `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/user/logout`
 
 ### User
 - `GET /product` - просмотр списка товаров.
