@@ -7,11 +7,20 @@ from app.product.product_schemas import ProductSchema, ProductCreateSchema, Prod
 from app.product.product_service import ProductService
 from decimal import Decimal
 
+from app.redis.rate_limiter import rate_limiter
+
 router = APIRouter(prefix="/product", tags=["product"])
 
 ProductServiceDep = Annotated[ProductService, Depends(get_product_service)]
 
-@router.get("", status_code=status.HTTP_200_OK, dependencies=[Depends(get_current_user)])
+@router.get(
+    "",
+    status_code=status.HTTP_200_OK,
+    dependencies=[
+        Depends(get_current_user),
+        Depends(rate_limiter(max_requests=2, window_seconds=10))
+    ]
+)
 async def get_all_product(
         product_services: ProductServiceDep,
         limit: int | None = 10,

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from app.models.cart_model import CartModel
     from app.models.order_model import OrderModel
     from app.models.balance_model import BalanceModel
+    from app.models.refresh_model import RefreshTokenModel
 
 from datetime import datetime
 
@@ -34,6 +36,6 @@ class UserModel(Base):
     cart: Mapped["CartModel"] = relationship(back_populates="user",uselist=False)
     orders: Mapped[list["OrderModel"]] = relationship(back_populates="user")
     balance: Mapped["BalanceModel"] = relationship(back_populates="user", uselist=False)
-
+    refresh_token: Mapped["RefreshTokenModel"] = relationship(back_populates="user", uselist=False)
 
 

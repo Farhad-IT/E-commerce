@@ -1,24 +1,20 @@
 import jwt
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from app.api.exception import PermissionDeniedException
 from app.auth.auth_service import AuthException
 from app.models.user_model import UserModel
 from app.db.session import SessionDep
-from app.core.security import security, SECRET_KEY, ALGORITHM
+from app.core.security import SECRET_KEY, ALGORITHM
 from app.core.log import logger
 
 
-async def get_current_user(db: SessionDep, credentials=Depends(security)):
+async def get_current_user(db: SessionDep, request: Request):
 
-    if credentials is None:
-        raise AuthException("No credentials")
+    token = request.cookies.get('access_token')
 
-    if credentials.scheme.lower() != "bearer":
-        raise AuthException("Invalid auth scheme")
-
-    token = credentials.credentials
-
+    if not token:
+        raise AuthException("No access token")
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

@@ -6,3 +6,4 @@ from .cart_item_model import CartItemModel
 from .order_model import OrderModel
 from .order_item_model import OrderItemModel
 from .balance_model import BalanceModel
+from .refresh_model import RefreshTokenModel

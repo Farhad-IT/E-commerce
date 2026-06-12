@@ -3,9 +3,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.models.user_model import UserRole
 
 
-class Token(BaseModel):
+class TokenSchema(BaseModel):
     access_token: str
-    token_type: str
+    refresh_token: str
 
 class UserSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -23,5 +23,3 @@ class UserCreateSchema(BaseModel):
 class LoginSchema(BaseModel):
     name: str = Field(max_length=50)
     password: str = Field(max_length=64)
-
-
