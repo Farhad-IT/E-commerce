@@ -7,7 +7,7 @@ async def test_create_cart(create_cart):
 
 
 async def test_get_cart_by_user_id(client, create_cart):
-    response = await client.get(f'/cart')
+    response = await client.get('/cart')
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] is not None
