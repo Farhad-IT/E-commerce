@@ -51,6 +51,7 @@ ecommerce-backend/
 ├── alembic.ini 
 ├── docker-compose.yml 
 ├── Dockerfile
+├── pyproject.toml
 ├── pytest.ini
 ├── README.md
 └── requirements.txt
