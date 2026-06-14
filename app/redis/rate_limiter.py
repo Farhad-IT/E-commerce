@@ -5,6 +5,7 @@ from redis.asyncio import Redis
 from fastapi import Request, HTTPException, Depends
 
 from app.redis.cache import get_redis_client
+from app.core.setting import testing_settings
 
 
 def rate_limiter(
@@ -12,7 +13,13 @@ def rate_limiter(
         window_seconds: int,
         key_prefix: str = "rate_limiter",
 ):
-    async def dependency(request: Request, redis: Redis = Depends(get_redis_client)):
+    async def dependency(request: Request, redis: Redis | None = Depends(get_redis_client)):
+        if testing_settings.TESTING:
+            return
+
+        if redis is None:
+            return
+
         if request.client is None:
             raise RuntimeError("Client not found")
 

@@ -33,7 +33,7 @@ async def registration(
 
 @router.post(
     "/login",
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(rate_limiter(max_requests=5, window_seconds=60))]
 )
 async def login(

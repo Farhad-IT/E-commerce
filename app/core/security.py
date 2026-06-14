@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 from fastapi import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.setting import testing_settings
 from app.models.refresh_model import RefreshTokenModel
 from app.models.user_model import UserModel
 
@@ -37,6 +38,13 @@ def hash_refresh_token(refresh_token: str) -> str:
 
 def absolute_max_ex(current_time: datetime) -> datetime:
     return current_time + timedelta(days=REFRESH_TOKEN_MAX_LIFETIME_DAYS)
+
+
+def ensure_utc(dt):
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
 
 def create_access_token(user: UserModel):
     payload = {
@@ -75,7 +83,7 @@ def set_auth_cookies(
         value=access_token,
         expires=access_token_expire,
         httponly=True,
-        secure=True,
+        secure=testing_settings.COOKIE_SECURE,
         samesite="lax",
     )
     response.set_cookie(
@@ -83,7 +91,7 @@ def set_auth_cookies(
         value=refresh_token,
         expires=refresh_token_expire,
         httponly=True,
-        secure=True,
+        secure=testing_settings.COOKIE_SECURE,
         samesite="lax",
     )
 
