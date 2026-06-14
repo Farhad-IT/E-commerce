@@ -17,12 +17,9 @@ class CartRepository:
         )
         return query.scalar_one_or_none()
 
-
     async def create_cart(self, user_id: int) -> CartModel:
         new_cart = CartModel(
             user_id=user_id,
         )
         self.db.add(new_cart)
         return new_cart
-
-

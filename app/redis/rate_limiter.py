@@ -9,11 +9,13 @@ from app.core.setting import testing_settings
 
 
 def rate_limiter(
-        max_requests: int,
-        window_seconds: int,
-        key_prefix: str = "rate_limiter",
+    max_requests: int,
+    window_seconds: int,
+    key_prefix: str = "rate_limiter",
 ):
-    async def dependency(request: Request, redis: Redis | None = Depends(get_redis_client)):
+    async def dependency(
+        request: Request, redis: Redis | None = Depends(get_redis_client)
+    ):
         if testing_settings.TESTING:
             return
 
@@ -30,7 +32,7 @@ def rate_limiter(
         now = time()
         window_start = now - window_seconds
 
-        current_requests = f"{now}-{random.randint(0,100_000)}"
+        current_requests = f"{now}-{random.randint(0, 100_000)}"
 
         async with redis.pipeline() as pipe:
             await pipe.zremrangebyscore(key, 0, window_start)
@@ -49,5 +51,3 @@ def rate_limiter(
             raise HTTPException(status_code=429, detail="Too many requests")
 
     return dependency
-
-

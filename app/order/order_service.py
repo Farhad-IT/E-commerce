@@ -1,6 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.exception import NotFoundException, ValidationException, PermissionDeniedException
+from app.api.exception import (
+    NotFoundException,
+    ValidationException,
+    PermissionDeniedException,
+)
 from app.models.order_model import OrderStatus
 from app.cart.cart_item_repository import CartItemRepository
 from app.cart.cart_repository import CartRepository
@@ -31,12 +35,15 @@ class OrderService:
             raise NotFoundException("Order not found")
         return [OrderSchema.model_validate(o) for o in order]
 
-    async def get_user_order_items(self, user_id: int, order_id: int) -> list[OrderItemSchema] | None:
-        order = await self.order_repository.get_by_id_and_user_id(order_id=order_id, user_id=user_id)
+    async def get_user_order_items(
+        self, user_id: int, order_id: int
+    ) -> list[OrderItemSchema] | None:
+        order = await self.order_repository.get_by_id_and_user_id(
+            order_id=order_id, user_id=user_id
+        )
         if not order:
             raise NotFoundException("Order not found")
         return [OrderItemSchema.model_validate(oi) for oi in order.order_items]
-
 
     async def checkout(self, user_id: int) -> OrderSchema:
         try:
@@ -49,7 +56,9 @@ class OrderService:
             products = {}
 
             for item in cart.cart_items:
-                product = await self.product_repository.get_product_by_id(product_id=item.product_id)
+                product = await self.product_repository.get_product_by_id(
+                    product_id=item.product_id
+                )
 
                 if product.stock < item.quantity:
                     raise ValidationException("Product stock exceeds quantity")
@@ -58,7 +67,9 @@ class OrderService:
 
                 total_price += item.quantity * product.price
 
-            order = await self.order_repository.create_order(user_id=user_id, total_price=total_price)
+            order = await self.order_repository.create_order(
+                user_id=user_id, total_price=total_price
+            )
 
             await self.db.flush()
 
@@ -89,7 +100,6 @@ class OrderService:
             await self.db.rollback()
             logger.exception("Failed to check out")
             raise
-
 
     async def pay_order(self, user_id: int, order_id: int) -> OrderSchema | None:
         try:
@@ -128,7 +138,6 @@ class OrderService:
             logger.exception(f"Failed to pay order with id {order_id}")
             raise
 
-
     async def cancel_order(self, user_id: int, order_id: int) -> OrderSchema:
         try:
             order = await self.order_repository.get_by_id(order_id=order_id)
@@ -163,5 +172,3 @@ class OrderService:
             await self.db.rollback()
             logger.exception(f"Failed to cancel order with id {order_id}")
             raise
-
-

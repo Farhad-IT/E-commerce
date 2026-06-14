@@ -16,12 +16,20 @@ class CategoryRepository:
         return category.scalars().all()
 
     async def get_category_by_id(self, category_id: int) -> CategoryModel | None:
-        query = select(CategoryModel).options(selectinload(CategoryModel.products)).where(CategoryModel.id == category_id)
+        query = (
+            select(CategoryModel)
+            .options(selectinload(CategoryModel.products))
+            .where(CategoryModel.id == category_id)
+        )
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
     async def get_category_by_name(self, name: str) -> CategoryModel | None:
-        query = select(CategoryModel).options(selectinload(CategoryModel.products)).where(CategoryModel.name == name)
+        query = (
+            select(CategoryModel)
+            .options(selectinload(CategoryModel.products))
+            .where(CategoryModel.name == name)
+        )
         result = await self.db.execute(query)
         return result.scalar_one_or_none()
 
@@ -32,5 +40,3 @@ class CategoryRepository:
 
     async def delete_category(self, category: CategoryModel) -> None:
         await self.db.delete(category)
-
-

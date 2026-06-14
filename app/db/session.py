@@ -15,8 +15,10 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False,
 )
 
+
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
 
-SessionDep=Annotated[AsyncSession, Depends(get_db)]
+
+SessionDep = Annotated[AsyncSession, Depends(get_db)]

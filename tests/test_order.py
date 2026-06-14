@@ -155,4 +155,3 @@ async def test_cancel_cancelled_order(client, create_order):
 
     second_cancel = await client.patch(f"/order/{order_id}/cancel")
     assert second_cancel.status_code == status.HTTP_400_BAD_REQUEST
-

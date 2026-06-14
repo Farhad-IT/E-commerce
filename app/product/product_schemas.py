@@ -17,6 +17,7 @@ class ProductSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class ProductCreateSchema(BaseModel):
     title: str = Field(min_length=1, max_length=50)
     description: Optional[str] = Field(max_length=100)
@@ -24,8 +25,10 @@ class ProductCreateSchema(BaseModel):
     stock: int = Field(gt=0)
     category_id: int
 
+
 class QuantitySchema(BaseModel):
     quantity: int = Field(gt=0)
+
 
 class ProductUpdateSchema(BaseModel):
     title: Optional[str] = Field(min_length=1, max_length=50)
@@ -33,7 +36,3 @@ class ProductUpdateSchema(BaseModel):
     price: Optional[Decimal] = Field(gt=0)
     stock: Optional[int] = Field(gt=0)
     category_id: Optional[int] = None
-
-
-
-

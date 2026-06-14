@@ -11,9 +11,11 @@ class CartItemSchema(BaseModel):
     product_id: int
     quantity: int
 
+
 class CartItemCreateSchema(BaseModel):
     product_id: int
     quantity: int = Field(gt=0)
+
 
 class CartItemUpdateSchema(BaseModel):
     quantity: Optional[int] = Field(gt=0)

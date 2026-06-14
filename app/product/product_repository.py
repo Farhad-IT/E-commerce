@@ -12,18 +12,27 @@ class ProductRepository:
         self.db = db
 
     async def get_all_products(
-            self, limit: int, offset: int, min_price: Decimal, max_price: Decimal, title: str, category_id: int, sort_by: str,
+        self,
+        limit: int,
+        offset: int,
+        min_price: Decimal,
+        max_price: Decimal,
+        title: str,
+        category_id: int,
+        sort_by: str,
     ) -> Sequence[ProductModel]:
 
         query = select(ProductModel)
 
-        query = query.filter(ProductModel.price >= min_price, ProductModel.price <= max_price)
+        query = query.filter(
+            ProductModel.price >= min_price, ProductModel.price <= max_price
+        )
 
         if title:
             query = query.filter(ProductModel.title.ilike(f"%{title}%"))
 
         if category_id:
-              query = query.filter(ProductModel.category_id == category_id)
+            query = query.filter(ProductModel.category_id == category_id)
 
         if sort_by == "price":
             query = query.order_by(ProductModel.price.asc())
@@ -42,17 +51,25 @@ class ProductRepository:
         products = await self.db.execute(query)
         return products.scalars().all()
 
-
     async def get_product_by_id(self, product_id: int) -> ProductModel | None:
-        query = select(ProductModel).filter(ProductModel.id == product_id).with_for_update()
+        query = (
+            select(ProductModel).filter(ProductModel.id == product_id).with_for_update()
+        )
         result = await self.db.execute(query)
         return result.scalars().first()
 
-    async def create_product(self, title: str, description: str , price: Decimal, stock: int, category_id: int) -> ProductModel:
-        new_product = ProductModel(title=title, description=description, price=price, stock=stock, category_id=category_id)
+    async def create_product(
+        self, title: str, description: str, price: Decimal, stock: int, category_id: int
+    ) -> ProductModel:
+        new_product = ProductModel(
+            title=title,
+            description=description,
+            price=price,
+            stock=stock,
+            category_id=category_id,
+        )
         self.db.add(new_product)
         return new_product
 
     async def delete_product(self, product: ProductModel) -> None:
         await self.db.delete(product)
-

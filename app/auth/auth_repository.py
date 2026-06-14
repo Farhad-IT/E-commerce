@@ -18,7 +18,7 @@ class AuthRepository:
         return user
 
     async def create_user(self, name: str, email: str, password: str) -> UserModel:
-        new_user = UserModel(name=name,email=email,password=password)
+        new_user = UserModel(name=name, email=email, password=password)
         self.db.add(new_user)
         return new_user
 
@@ -28,7 +28,9 @@ class AuthRepository:
         return user
 
     async def get_user_by_email(self, email: str) -> UserModel | None:
-        result = await self.db.execute(select(UserModel).where(UserModel.email == email))
+        result = await self.db.execute(
+            select(UserModel).where(UserModel.email == email)
+        )
         user = result.scalar_one_or_none()
         return user
 
@@ -45,7 +47,9 @@ class AuthRepository:
         return token
 
     async def get_token_by_user_id(self, user_id: int) -> RefreshTokenModel | None:
-        result = await self.db.execute(select(RefreshTokenModel).where(RefreshTokenModel.user_id == user_id))
+        result = await self.db.execute(
+            select(RefreshTokenModel).where(RefreshTokenModel.user_id == user_id)
+        )
         token = result.scalar_one_or_none()
         return token
 

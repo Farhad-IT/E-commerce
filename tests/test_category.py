@@ -17,7 +17,7 @@ async def test_get_all_categories(client, create_category):
 
 
 async def test_get_category_by_id(client, create_category):
-    response = await client.get(f"/category/{create_category["id"]}")
+    response = await client.get(f"/category/{create_category['id']}")
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] == create_category["id"]
@@ -25,7 +25,9 @@ async def test_get_category_by_id(client, create_category):
 
 
 async def test_update_category(client, create_category):
-    response = await client.patch(f"/category/{create_category["id"]}", json={"name": "updated_test"})
+    response = await client.patch(
+        f"/category/{create_category['id']}", json={"name": "updated_test"}
+    )
     assert response.status_code == status.HTTP_200_OK
 
     data = response.json()
@@ -34,7 +36,7 @@ async def test_update_category(client, create_category):
 
 
 async def test_delete_category(client, create_category):
-    response = await client.delete(f"/category/{create_category["id"]}")
+    response = await client.delete(f"/category/{create_category['id']}")
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
     response = await client.get(f"/category/{create_category['id']}")

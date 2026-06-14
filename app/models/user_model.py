@@ -17,9 +17,10 @@ from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
+
 class UserRole(str, Enum):
-     admin = "admin"
-     user = "user"
+    admin = "admin"
+    user = "user"
 
 
 class UserModel(Base):
@@ -29,13 +30,15 @@ class UserModel(Base):
     name: Mapped[str] = mapped_column(unique=True)
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
-    added_at: Mapped[datetime] = mapped_column(DateTime, default=func.now(), server_default=func.now(), nullable=False)
+    added_at: Mapped[datetime] = mapped_column(
+        DateTime, default=func.now(), server_default=func.now(), nullable=False
+    )
 
-    role: Mapped["UserRole"] = mapped_column(SqlEnum(UserRole),default=UserRole.user)
+    role: Mapped["UserRole"] = mapped_column(SqlEnum(UserRole), default=UserRole.user)
 
-    cart: Mapped["CartModel"] = relationship(back_populates="user",uselist=False)
+    cart: Mapped["CartModel"] = relationship(back_populates="user", uselist=False)
     orders: Mapped[list["OrderModel"]] = relationship(back_populates="user")
     balance: Mapped["BalanceModel"] = relationship(back_populates="user", uselist=False)
-    refresh_token: Mapped["RefreshTokenModel"] = relationship(back_populates="user", uselist=False)
-
-
+    refresh_token: Mapped["RefreshTokenModel"] = relationship(
+        back_populates="user", uselist=False
+    )

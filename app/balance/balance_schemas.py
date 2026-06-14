@@ -12,8 +12,10 @@ class BalanceSchema(BaseModel):
     amount: float
     created_at: datetime
 
+
 class BalanceCreateSchema(BaseModel):
     amount: float = Field(gt=0)
+
 
 class BalanceUpdateSchema(BaseModel):
     amount: Optional[float] = Field(gt=0)

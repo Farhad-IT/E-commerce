@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from app.models import BalanceModel
 
+
 class BalanceRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -14,6 +15,6 @@ class BalanceRepository:
         return result.scalar_one_or_none()
 
     async def create_balance(self, user_id: int, amount: Decimal) -> BalanceModel:
-        new_balance = BalanceModel(user_id=user_id,amount=amount)
+        new_balance = BalanceModel(user_id=user_id, amount=amount)
         self.db.add(new_balance)
         return new_balance

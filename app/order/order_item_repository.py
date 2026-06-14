@@ -9,7 +9,9 @@ class OrderItemRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_instance(self, order_id: int, product_id: int, quantity: int, price: Decimal) -> OrderItemModel:
+    async def create_instance(
+        self, order_id: int, product_id: int, quantity: int, price: Decimal
+    ) -> OrderItemModel:
         return OrderItemModel(
             order_id=order_id,
             product_id=product_id,
@@ -17,8 +19,8 @@ class OrderItemRepository:
             price=price,
         )
 
-    async def bulk_create(self, order_items: list[OrderItemModel]) -> Sequence[OrderItemModel]:
+    async def bulk_create(
+        self, order_items: list[OrderItemModel]
+    ) -> Sequence[OrderItemModel]:
         self.db.add_all(order_items)
         return order_items
-
-

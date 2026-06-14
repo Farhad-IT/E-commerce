@@ -4,8 +4,13 @@ from app.api.exception import NotFoundException, ConflictException, ValidationEx
 from app.cart.cart_item_repository import CartItemRepository
 from app.cart.cart_repository import CartRepository
 from app.product.product_repository import ProductRepository
-from app.cart.cart_item_schemas import CartItemSchema, CartItemCreateSchema, CartItemUpdateSchema
+from app.cart.cart_item_schemas import (
+    CartItemSchema,
+    CartItemCreateSchema,
+    CartItemUpdateSchema,
+)
 from app.cart.cart_schemas import CartSchema
+
 
 class CartService:
     def __init__(self, db: AsyncSession):
@@ -22,7 +27,6 @@ class CartService:
 
         return CartSchema.model_validate(cart)
 
-
     async def create_cart(self, user_id: int) -> CartSchema:
         cart = await self.cart_repository.get_cart_by_user_id(user_id=user_id)
 
@@ -32,31 +36,37 @@ class CartService:
         cart = await self.cart_repository.create_cart(user_id=user_id)
 
         await self.db.commit()
-        await self.db.refresh(cart,["cart_items"])
+        await self.db.refresh(cart, ["cart_items"])
         return CartSchema.model_validate(cart)
 
-
-    async def get_by_product_id(self, user_id: int, product_id: int) -> CartItemSchema | None:
+    async def get_by_product_id(
+        self, user_id: int, product_id: int
+    ) -> CartItemSchema | None:
         cart = await self.cart_repository.get_cart_by_user_id(user_id=user_id)
 
         if not cart:
             raise NotFoundException("Cart does not exist")
 
-        cart_item = await self.cart_item_repository.get_by_product_id(cart_id=cart.id, product_id=product_id)
+        cart_item = await self.cart_item_repository.get_by_product_id(
+            cart_id=cart.id, product_id=product_id
+        )
 
         if not cart_item:
             raise NotFoundException("Cart item does not exist")
 
         return CartItemSchema.model_validate(cart_item)
 
-
-    async def add_item_to_cart(self, user_id: int, create_item: CartItemCreateSchema) -> CartItemSchema | None:
+    async def add_item_to_cart(
+        self, user_id: int, create_item: CartItemCreateSchema
+    ) -> CartItemSchema | None:
         cart = await self.cart_repository.get_cart_by_user_id(user_id=user_id)
 
         if not cart:
             raise NotFoundException("Cart does not exist")
 
-        product = await self.product_repository.get_product_by_id(product_id=create_item.product_id)
+        product = await self.product_repository.get_product_by_id(
+            product_id=create_item.product_id
+        )
 
         if not product:
             raise NotFoundException("Product does not exist")
@@ -64,7 +74,9 @@ class CartService:
         if product.stock < create_item.quantity:
             raise ValidationException("Product stock exceeds quantity")
 
-        available_product = await self.cart_item_repository.get_by_product_id(cart_id=cart.id, product_id=create_item.product_id)
+        available_product = await self.cart_item_repository.get_by_product_id(
+            cart_id=cart.id, product_id=create_item.product_id
+        )
 
         if available_product:
             available_product.quantity += create_item.quantity
@@ -86,8 +98,9 @@ class CartService:
 
         return CartItemSchema.model_validate(cart_item)
 
-
-    async def update_quantity(self, user_id: int, product_id: int, update_item: CartItemUpdateSchema) -> CartItemSchema | None:
+    async def update_quantity(
+        self, user_id: int, product_id: int, update_item: CartItemUpdateSchema
+    ) -> CartItemSchema | None:
         cart = await self.cart_repository.get_cart_by_user_id(user_id=user_id)
 
         if not cart:
@@ -101,7 +114,9 @@ class CartService:
         if update_item.quantity > product.stock:
             raise ValidationException("Product stock exceeds quantity")
 
-        available_product = await self.cart_item_repository.get_by_product_id(cart_id=cart.id, product_id=product_id)
+        available_product = await self.cart_item_repository.get_by_product_id(
+            cart_id=cart.id, product_id=product_id
+        )
 
         if not available_product:
             raise NotFoundException("Product does not exist")
@@ -110,7 +125,6 @@ class CartService:
         await self.db.commit()
         await self.db.refresh(available_product)
         return CartItemSchema.model_validate(available_product)
-
 
     async def delete_item(self, user_id: int, item_id: int) -> None:
         cart = await self.cart_repository.get_cart_by_user_id(user_id=user_id)

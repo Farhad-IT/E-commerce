@@ -7,9 +7,17 @@ from app.auth.auth_repository import AuthRepository
 from app.auth.auth_schemas import TokenSchema, LoginSchema, UserSchema, UserCreateSchema
 
 from app.api.exception import AuthException, PermissionDeniedException
-from app.core.security import verify_password, create_access_token, hash_password, create_refresh_token, \
-    hash_refresh_token, absolute_max_ex, ensure_utc
+from app.core.security import (
+    verify_password,
+    create_access_token,
+    hash_password,
+    create_refresh_token,
+    hash_refresh_token,
+    absolute_max_ex,
+    ensure_utc,
+)
 from app.core.log import logger
+
 
 class AuthService:
     def __init__(self, db: AsyncSession):
@@ -21,18 +29,24 @@ class AuthService:
         return [UserSchema.model_validate(u) for u in user]
 
     async def registration(self, user_create: UserCreateSchema) -> UserSchema:
-        existing_user = await self.auth_repository.get_user_by_name(name=user_create.name)
+        existing_user = await self.auth_repository.get_user_by_name(
+            name=user_create.name
+        )
 
         if existing_user:
             raise AuthException("User already exists")
 
-        existing_email = await self.auth_repository.get_user_by_email(email=user_create.email)
+        existing_email = await self.auth_repository.get_user_by_email(
+            email=user_create.email
+        )
 
         if existing_email:
             raise AuthException("Email already exists")
 
         hashed = hash_password(user_create.password)
-        user = await self.auth_repository.create_user(name=user_create.name, email=user_create.email, password=hashed)
+        user = await self.auth_repository.create_user(
+            name=user_create.name, email=user_create.email, password=hashed
+        )
 
         await self.db.commit()
         await self.db.refresh(user)
@@ -50,10 +64,14 @@ class AuthService:
             logger.warning(f"Invalid password at user {user_login.name}")
             raise AuthException("Invalid credentials")
 
-        old_refresh_token = await self.auth_repository.get_token_by_user_id(user_id=user.id)
+        old_refresh_token = await self.auth_repository.get_token_by_user_id(
+            user_id=user.id
+        )
 
         if old_refresh_token is not None:
-            await self.auth_repository.delete_refresh_token(refresh_token=old_refresh_token)
+            await self.auth_repository.delete_refresh_token(
+                refresh_token=old_refresh_token
+            )
 
         access_token = create_access_token(user)
         refresh_token = create_refresh_token(user, self.db)
@@ -75,7 +93,6 @@ class AuthService:
         expires_at = ensure_utc(token.expires_at)
         created_at = ensure_utc(token.created_at)
 
-
         if expires_at < datetime.now(timezone.utc):
             await self.auth_repository.delete_refresh_token(refresh_token=token)
             raise AuthException("Token has expired")
@@ -90,7 +107,9 @@ class AuthService:
         new_refresh_token = create_refresh_token(token.user, self.db)
 
         await self.db.commit()
-        return TokenSchema(access_token=new_access_token, refresh_token=new_refresh_token)
+        return TokenSchema(
+            access_token=new_access_token, refresh_token=new_refresh_token
+        )
 
     async def delete_refresh_token(self, refresh_token: str) -> None:
         if not refresh_token:
@@ -106,14 +125,13 @@ class AuthService:
         await self.auth_repository.delete_refresh_token(refresh_token=token)
         await self.db.commit()
 
-
     async def change_user_role(self, user_id: int, role: str) -> UserSchema | None:
         user = await self.auth_repository.get_user_by_id(user_id=user_id)
 
         if not user:
             raise AuthException("User not found")
 
-        if role not in ['admin', 'user']:
+        if role not in ["admin", "user"]:
             raise PermissionDeniedException("Invalid role")
 
         if user.role == role:
@@ -123,4 +141,3 @@ class AuthService:
         await self.db.commit()
         await self.db.refresh(user)
         return UserSchema.model_validate(user)
-

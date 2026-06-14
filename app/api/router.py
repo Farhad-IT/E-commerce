@@ -14,6 +14,3 @@ router.include_router(category_router)
 router.include_router(cart_router)
 router.include_router(order_router)
 router.include_router(fake_balance_router)
-
-
-

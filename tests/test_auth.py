@@ -9,11 +9,7 @@ async def test_register(client, register_user):
 async def test_register_duplicate_email(client, register_user):
     response = await client.post(
         "/auth/registration",
-        json={
-            "name": "test",
-            "email": register_user["email"],
-            "password": "12345678"
-        }
+        json={"name": "test", "email": register_user["email"], "password": "12345678"},
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -26,10 +22,7 @@ async def test_login(client, login_user):
 async def test_invalid_login(client, register_user):
     response = await client.post(
         "/auth/login",
-        json={
-            "name": "wrong_name",
-            "password": "wrong_password"
-        },
+        json={"name": "wrong_name", "password": "wrong_password"},
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -37,10 +30,7 @@ async def test_invalid_login(client, register_user):
 async def test_login_invalid_password(client, register_user):
     response = await client.post(
         "/auth/login",
-        json={
-            "name": register_user["name"],
-            "password": "wrong_password"
-        },
+        json={"name": register_user["name"], "password": "wrong_password"},
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -49,10 +39,7 @@ async def test_login_invalid_password(client, register_user):
 async def test_login_nonexistent_user(client, register_user):
     response = await client.post(
         "/auth/login",
-        json={
-            "name": "wrong_name",
-            "password": "12345678"
-        },
+        json={"name": "wrong_name", "password": "12345678"},
     )
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED

@@ -7,7 +7,7 @@ async def test_create_cart(create_cart):
 
 
 async def test_get_cart_by_user_id(client, create_cart):
-    response = await client.get('/cart')
+    response = await client.get("/cart")
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] is not None
@@ -22,7 +22,7 @@ async def test_add_item_to_cart(client, create_item):
 
 
 async def test_get_by_product_id(client, create_item):
-    response = await client.get(f'/cart/items/{create_item["product_id"]}')
+    response = await client.get(f"/cart/items/{create_item['product_id']}")
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] is not None
@@ -32,13 +32,15 @@ async def test_get_by_product_id(client, create_item):
 
 
 async def test_get_by_product_id_exception(client, create_item):
-    response = await client.get('/cart/items/-1')
+    response = await client.get("/cart/items/-1")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Cart item does not exist"
 
 
 async def test_update_by_product_id(client, create_item):
-    response = await client.patch(f'/cart/items/{create_item["product_id"]}', json={"quantity": 1})
+    response = await client.patch(
+        f"/cart/items/{create_item['product_id']}", json={"quantity": 1}
+    )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert data["id"] is not None
@@ -46,26 +48,26 @@ async def test_update_by_product_id(client, create_item):
 
 
 async def test_update_by_product_id_exception(client, create_item):
-    response = await client.patch('/cart/items/-1', json={"quantity": 1})
+    response = await client.patch("/cart/items/-1", json={"quantity": 1})
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Product does not exist"
 
 
 async def test_delete_item(client, create_item):
-    response = await client.delete(f'/cart/items/{create_item["id"]}')
+    response = await client.delete(f"/cart/items/{create_item['id']}")
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
 async def test_delete_item_exception(client, create_item):
-    response = await client.delete('/cart/items/-1')
+    response = await client.delete("/cart/items/-1")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["detail"] == "Item does not exist"
 
 
 async def test_clear_cart(client, create_cart):
-    response = await client.delete('/cart/items')
+    response = await client.delete("/cart/items")
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    response = await client.get('/cart')
+    response = await client.get("/cart")
     data = response.json()
     assert data["cart_items"] == []

@@ -11,7 +11,11 @@ class OrderRepository:
         self.db = db
 
     async def get_user_orders(self, user_id: int) -> Sequence[OrderModel]:
-        query = select(OrderModel).options(selectinload(OrderModel.order_items)).where(OrderModel.user_id == user_id)
+        query = (
+            select(OrderModel)
+            .options(selectinload(OrderModel.order_items))
+            .where(OrderModel.user_id == user_id)
+        )
         query = await self.db.execute(query)
         return query.scalars().all()
 
@@ -26,7 +30,9 @@ class OrderRepository:
 
         return result.scalar_one_or_none()
 
-    async def get_by_id_and_user_id(self, order_id: int, user_id: int) -> OrderModel | None:
+    async def get_by_id_and_user_id(
+        self, order_id: int, user_id: int
+    ) -> OrderModel | None:
         query = (
             select(OrderModel)
             .options(selectinload(OrderModel.order_items))
@@ -40,6 +46,3 @@ class OrderRepository:
         order = OrderModel(user_id=user_id, total_price=total_price)
         self.db.add(order)
         return order
-
-
-

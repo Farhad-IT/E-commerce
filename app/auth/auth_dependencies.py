@@ -11,7 +11,7 @@ from app.core.log import logger
 
 async def get_current_user(db: SessionDep, request: Request):
 
-    token = request.cookies.get('access_token')
+    token = request.cookies.get("access_token")
 
     if not token:
         raise AuthException("No access token")
@@ -43,6 +43,5 @@ def require_role(*roles):
             logger.warning(f"Invalid role at user with id: {user.id}")
             raise PermissionDeniedException("Forbidden")
         return user
+
     return role_checker
-
-

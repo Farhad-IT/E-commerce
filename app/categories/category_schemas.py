@@ -12,8 +12,10 @@ class CategorySchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class CategoryCreateSchema(BaseModel):
     name: str = Field(min_length=1, max_length=50)
+
 
 class CategoryUpdateSchema(BaseModel):
     name: Optional[str] = Field(min_length=1, max_length=50)
