@@ -101,7 +101,7 @@ async def test_change_user_role(client, register_user, login_user):
 
 
 async def test_change_user_role_exception(client, login_user):
-    response = await client.patch(f"/auth/users/1?role=123")
+    response = await client.patch("/auth/users/1?role=123")
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert response.json()["detail"] == "Invalid role"
 
