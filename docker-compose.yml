@@ -1,9 +1,19 @@
 services:
+  nginx:
+    image: nginx:latest
+    container_name: ecommerce_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
   app:
     build: .
     container_name: ecommerce_app
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - .env
     environment:

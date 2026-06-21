@@ -39,6 +39,7 @@
 - Celery
 - RabbitMQ
 - Docker
+- Nginx
 
 ## Структура проекта
 
@@ -47,6 +48,7 @@ ecommerce-backend/
 ├── .github/
 ├── alembic/
 ├── app/
+├── nginx/
 ├── tests/
 ├──.dockerignore
 ├── .env
@@ -103,7 +105,7 @@ docker compose up --build
 docker compose up --build -d
 ```
 
-Ссылка на документацию: [Swagger UI](http://localhost:8000/docs)
+Ссылка на документацию: [Swagger UI](http://localhost:80/docs)
 
 ## API Endpoints
 

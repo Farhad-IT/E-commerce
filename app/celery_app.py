@@ -15,6 +15,9 @@ celery_app = Celery(
     "celery_app",
     broker=f"amqp://{RABBITMQ_USER}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}//",
     backend="rpc://",
+    include=[
+        "app.worker.tasks"
+    ]
 )
 
 celery_app.conf.update(
@@ -23,5 +26,5 @@ celery_app.conf.update(
     accept_content=["json"],
     result_serializer="json",
 )
-
+celery_app.conf.task_acks_late = False
 celery_app.autodiscover_tasks(["app.worker"])
