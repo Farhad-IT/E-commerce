@@ -8,7 +8,6 @@ from typing import AsyncGenerator
 from fastapi import status
 
 from app.auth.auth_dependencies import get_current_user
-from app.celery_app import celery_app
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
