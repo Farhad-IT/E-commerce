@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.setting import testing_settings
 from app.models.user_model import UserRole
 from app.auth.auth_repository import AuthRepository
 from app.auth.auth_schemas import TokenSchema, LoginSchema, UserSchema, UserCreateSchema
@@ -17,6 +18,7 @@ from app.core.security import (
     ensure_utc,
 )
 from app.core.log import logger
+from app.worker.tasks import send_welcome_confirmation_email
 
 
 class AuthService:
@@ -78,6 +80,11 @@ class AuthService:
 
         logger.info(f"User {user_login.name} logged in")
         await self.db.commit()
+
+        if not testing_settings.TESTING:
+            send_welcome_confirmation_email.delay(
+                email=user.email, name=user.name, user_id=user.id
+            )
         return TokenSchema(access_token=access_token, refresh_token=refresh_token)
 
     async def refresh(self, refresh_token: str) -> TokenSchema:

@@ -13,6 +13,25 @@ services:
       - redis
     restart: unless-stopped
 
+  celery_worker:
+    build: .
+    command: celery -A app.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
   db:
     image: postgres:16
     container_name: ecommerce_db
@@ -34,3 +53,4 @@ services:
 
 volumes:
   pg_data:
+  rabbitmq-data:

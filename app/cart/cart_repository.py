@@ -12,7 +12,7 @@ class CartRepository:
     async def get_cart_by_user_id(self, user_id: int) -> CartModel | None:
         query = await self.db.execute(
             select(CartModel)
-            .options(selectinload(CartModel.cart_items))
+            .options(selectinload(CartModel.cart_items), selectinload(CartModel.user))
             .where(CartModel.user_id == user_id)
         )
         return query.scalar_one_or_none()

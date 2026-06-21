@@ -5,6 +5,8 @@ from app.api.exception import (
     ValidationException,
     PermissionDeniedException,
 )
+from app.auth.auth_repository import AuthRepository
+from app.core.setting import testing_settings
 from app.models.order_model import OrderStatus
 from app.cart.cart_item_repository import CartItemRepository
 from app.cart.cart_repository import CartRepository
@@ -17,6 +19,7 @@ from app.order.order_schemas import OrderSchema
 
 from decimal import Decimal
 from app.core.log import logger
+from app.worker.tasks import send_order_confirmation_email
 
 
 class OrderService:
@@ -28,6 +31,7 @@ class OrderService:
         self.cart_item_repository = CartItemRepository(db)
         self.product_repository = ProductRepository(db)
         self.balance_repository = BalanceRepository(db)
+        self.auth_repository = AuthRepository(db)
 
     async def get_user_orders(self, user_id: int) -> list[OrderSchema] | None:
         order = await self.order_repository.get_user_orders(user_id=user_id)
@@ -47,6 +51,7 @@ class OrderService:
 
     async def checkout(self, user_id: int) -> OrderSchema:
         try:
+            user = await self.auth_repository.get_user_by_id(user_id=user_id)
             cart = await self.cart_repository.get_cart_by_user_id(user_id=user_id)
 
             if not cart or not cart.cart_items:
@@ -94,6 +99,9 @@ class OrderService:
             await self.cart_item_repository.clear_cart(cart_id=cart.id)
             await self.db.commit()
             await self.db.refresh(order, ["order_items"])
+
+            if not testing_settings.TESTING:
+                send_order_confirmation_email.delay(email=user.email, order_id=order.id)
             logger.info(f"User with id {user_id} successfully checked out")
             return OrderSchema.model_validate(order)
         except Exception:
