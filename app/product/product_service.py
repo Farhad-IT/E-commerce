@@ -11,7 +11,6 @@ from app.product.product_schemas import (
 from decimal import Decimal
 from app.api.exception import NotFoundException
 from app.redis.cache import cache_result, clear_cache
-from app.worker.tasks import send_order_confirmation_email
 
 
 class ProductService:
