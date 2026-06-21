@@ -15,9 +15,7 @@ celery_app = Celery(
     "celery_app",
     broker=f"amqp://{RABBITMQ_USER}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}//",
     backend="rpc://",
-    include=[
-        "app.worker.tasks"
-    ]
+    include=["app.worker.tasks"],
 )
 
 celery_app.conf.update(
